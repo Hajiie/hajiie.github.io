@@ -15,7 +15,7 @@ My aim is to fuse domain knowledge in construction and environmental engineering
 
 Should you have any questions or wish to share thoughts, please feel free to contact me anytime via comments or email.
 
-::github{repo="Hajiie/Page"}
+::github{repo="Hajiie/hajiie.github.io"}
 
 [//]: # (> ### Sources of images used in this site)
 
