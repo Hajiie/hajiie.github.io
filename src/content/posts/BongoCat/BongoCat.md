@@ -14,7 +14,7 @@ lang: 'Kotlin'
 
 ## 1. DocumentListener 중복 등록 문제
 
-원인
+문제 및 원인
 - 같은 Document에 DocumentListener를 여러 번 등록하면 이벤트가 중복 실행되고 메모리 누수가 발생
 - 파일을 다시 열 때 이전 리스너가 해제되지 않아 문제가 생김.
 
@@ -31,7 +31,7 @@ documentListenersMap[document]?.let {
 
 ## 2. 키 입력 시 아이콘 전환 불안정
 
-원인
+문제 및 원인
 - 빠른 타이핑 시 아이콘 토글이 꼬이거나, 입력이 끝난 뒤에도 중립 아이콘으로 복귀하지 않음.
 - 이벤트 타이밍만으로는 `idle 상태`를 표현하기 어려움.
 
@@ -42,7 +42,7 @@ documentListenersMap[document]?.let {
 
 ## 3. ToolWindow 리사이즈 시 성능 저하
 
-원인
+문제 및 원인
 - `componentResized` 이벤트가 연속적으로 발생할 때마다 이미지가 계속 리스케일링되어 CPU 부담이 큼.
 
 해결 방법
@@ -52,7 +52,7 @@ documentListenersMap[document]?.let {
 
 ## 4. 초기 파일 로딩 시 리스너 미등록 문제
 
-원인
+문제 및 원인
 - 프로젝트를 열었을 때 이미 열려 있는 파일들은 `fileOpened` 이벤트가 발생하지 않음.
 - 문서 변경 이벤트가 처음에는 감지되지 않음.
 
