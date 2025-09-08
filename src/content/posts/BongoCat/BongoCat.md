@@ -5,7 +5,7 @@ description: 'The BongoCat plugin is a JetBrains plugin developed in the Kotlin 
 image: "./BongoCat.png"
 tags: [Plugin, Jetbrains, Kotlin]
 category: 'Plugin'
-draft: false 
+draft: false
 lang: 'Kotlin'
 ---
 ::github{repo="Hajiie/BongoCat"}
