@@ -10,6 +10,18 @@ lang: 'Kotlin'
 ---
 ::github{repo="Hajiie/BongoCat"}
 
+# BongoCat IntelliJ 플러그인
+
+## 프로젝트 목표
+
+Visual Studio Marketplace 에 있는 Bongo Cat Buddy Extension과 유사한 기능을 Jetbrains IDE에서 플러그인으로 구현
+
+## 기능
+
+- 사용자의 타이핑에 반응하는 봉고 고양이 애니메이션
+- toolWindow 크기에 맞춰 자동으로 크기 조정
+- ~~타이핑 시 키보드 사운드~~
+
 # BongoCat IntelliJ 플러그인 트러블슈팅 정리
 
 ## 1. DocumentListener 중복 등록 문제

@@ -2,7 +2,7 @@
 title: GraduationProject_Civil
 published: 2025-09-08
 description: 'The objective is to develop an application capable of visualising flood situations in augmented reality (AR) within the physical space of urban areas where flood and inundation risks exist.'
-image: "./Civil_Img.jpeg"
+image: ""
 tags: [Unity, GraduationProject, C#, Visualization]
 category: 'Unity'
 draft: false 
