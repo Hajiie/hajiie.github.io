@@ -5,10 +5,11 @@ description: 'Summary of OpenGL Study Using C++'
 image: 'https://learnopengl.com/img/index_image2.png'
 tags: [OpenGL, Study, C++]
 category: 'Study'
-draft: True 
+draft: False 
 lang: 'C++'
 ---
-[LearnOpenGL](https://learnopengl.com/) 강의 요약
+[LearnOpenGL](https://learnopengl.com/) 강의 요약   
+2025-09-09 ~ Ing
 
 # Getting Started
 ## OpenGL
