@@ -8,7 +8,8 @@ category: 'Study'
 draft: False 
 lang: 'C++'
 ---
-[LearnOpenGL](https://learnopengl.com/) 강의 요약   
+::github{repo="Hajiie/LearnOpenGL"}
+[LearnOpenGL](https://learnopengl.com/) 강의 요약
 2025-09-09 ~ Ing
 
 # Getting Started
