@@ -1,5 +1,5 @@
 ---
-title: GraduationProject_Civil
+title: "토목공학과 졸업프로젝트: 침수 시각화" 
 published: 2025-09-08
 description: 'The objective is to develop an application capable of visualising flood situations in augmented reality (AR) within the physical space of urban areas where flood and inundation risks exist.'
 image: ""
