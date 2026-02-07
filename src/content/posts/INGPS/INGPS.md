@@ -2,7 +2,7 @@
 title: 투수 동작 분석 서버 및 시각화
 published: 2025-12-29
 description: 'Django-based Pitcher Analysis Backend Server & Visualization'
-image: "./INGPS_Skeleton.png"
+image: "./INGPS_Start.png"
 tags: [Python, Server, Django]
 category: 'Django'
 draft: false 
