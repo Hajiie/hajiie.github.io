@@ -2,7 +2,7 @@
 title: "Linker: 비개발자용 서버 및 환경 관리 앱"
 published: 2026-03-24
 description: 'Linker is an application designed to make it easy for non-developers to access and use personal servers when they have set them up.'
-image: ''
+image: './Linker_Start.png'
 tags: [Electron, Server, TypeScript]
 category: 'TypeScript'
 draft: false 
