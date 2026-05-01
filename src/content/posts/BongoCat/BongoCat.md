@@ -20,7 +20,7 @@ Visual Studio Marketplace 에 있는 Bongo Cat Buddy Extension과 유사한 기�
 
 - 사용자의 타이핑에 반응하는 봉고 고양이 애니메이션
 - toolWindow 크기에 맞춰 자동으로 크기 조정
-- ~~타이핑 시 키보드 사운드~~
+- 타이핑 시 키보드 및 봉고 사운드
 
 # BongoCat IntelliJ 플러그인 트러블슈팅 정리
 
