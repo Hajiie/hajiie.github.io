@@ -1,0 +1,53 @@
+{
+	"labId": "research-lab-v1",
+	"nodes": [
+		{ "id": "minji", "label": "Researcher", "name": "민지", "x": 90, "y": 100 },
+		{
+			"id": "junho",
+			"label": "Researcher",
+			"name": "준호",
+			"x": 310,
+			"y": 100
+		},
+		{ "id": "sora", "label": "Researcher", "name": "소라", "x": 530, "y": 100 },
+		{
+			"id": "graph",
+			"label": "Topic",
+			"name": "그래프 DB",
+			"x": 180,
+			"y": 270
+		},
+		{
+			"id": "vision",
+			"label": "Topic",
+			"name": "컴퓨터 비전",
+			"x": 500,
+			"y": 270
+		},
+		{
+			"id": "paper-graph",
+			"label": "Paper",
+			"name": "협업 네트워크",
+			"x": 70,
+			"y": 430
+		},
+		{
+			"id": "paper-vision",
+			"label": "Paper",
+			"name": "영상 분류",
+			"x": 480,
+			"y": 430
+		}
+	],
+	"edges": [
+		{ "source": "minji", "target": "graph", "type": "WORKS_ON" },
+		{ "source": "junho", "target": "graph", "type": "WORKS_ON" },
+		{ "source": "sora", "target": "vision", "type": "WORKS_ON" },
+		{ "source": "minji", "target": "paper-graph", "type": "AUTHORED" },
+		{ "source": "junho", "target": "paper-graph", "type": "AUTHORED" },
+		{ "source": "sora", "target": "paper-vision", "type": "AUTHORED" },
+		{ "source": "paper-graph", "target": "graph", "type": "ABOUT" },
+		{ "source": "paper-vision", "target": "vision", "type": "ABOUT" },
+		{ "source": "junho", "target": "sora", "type": "COLLABORATES_WITH" }
+	]
+}
