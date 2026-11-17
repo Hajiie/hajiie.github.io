@@ -15,3 +15,13 @@ node --test tests/research-lab.test.mjs
 The ZIP is deterministic and its SHA-256 plus individual file hashes are recorded in `bundle.json`. `cnn_lab.ipynb`, `seed.cypher`, and `queries.cypher` are generated from the maintained Python sources and graph data. Python requirements install only on the learner's machine, not in the website build.
 
 The browser graph is a JSON simulation with matching Cypher examples. The browser CNN performs convolution, backpropagation and SGD locally on synthetic lines. The downloadable exercises use real Neo4j and PyTorch/MNIST. These datasets and accuracy measurements must remain clearly distinguished.
+
+The course now spans 14 days. `classical_lab.py` covers days 1–9 and 13–14, `train_cnn.py` covers days 10–11, and Neo4j covers day 12. The curriculum block in the draft article is the canonical source of the generated `curriculum.md` download. Update that block before regenerating the archive. `ml_basics.ipynb` is also generated and self-contained.
+
+Python integration checks (with `requirements-ml.txt` and CPU PyTorch installed):
+
+```sh
+python -m unittest discover -s tests -p "test_research_course.py"
+```
+
+Daily classical exercises hold back test data until day 14. PyTorch emits validation metrics by default; `--evaluate-test` performs one final evaluation after training.

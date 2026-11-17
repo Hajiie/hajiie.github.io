@@ -98,6 +98,18 @@ test("download bundle digest and source files match the packaged manifest", () =
 	const digest = (value) => createHash("sha256").update(value).digest("hex");
 	assert.equal(digest(Buffer.from(bundle.base64, "base64")), bundle.sha256);
 	for (const file of bundle.files) {
+		if (file.name === "curriculum.md") {
+			const article = readFileSync(
+				new URL(
+					"../src/content/posts/ResearchLab/ResearchLab.md",
+					import.meta.url,
+				),
+				"utf8",
+			);
+			const curriculum = `${article.split("<!-- curriculum:start -->")[1].split("<!-- curriculum:end -->")[0].trim()}\n`;
+			assert.equal(digest(curriculum), file.sha256);
+			continue;
+		}
 		if (file.name.endsWith(".cypher") || file.name.endsWith(".ipynb")) continue;
 		const path =
 			file.name === "graph.json" ? "graph-data.json" : `files/${file.name}`;

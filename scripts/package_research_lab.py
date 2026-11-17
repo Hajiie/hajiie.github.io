@@ -11,12 +11,15 @@ LAB = ROOT / "src/labs/research"
 FILES = LAB / "files"
 
 
+def cell(kind, text):
+    result = {"id": hashlib.sha256((kind + text).encode()).hexdigest()[:12],
+              "cell_type": kind, "metadata": {}, "source": text.splitlines(keepends=True)}
+    if kind == "code": result.update(execution_count=None, outputs=[])
+    return result
+
+
 def notebook():
     code = (FILES / "train_cnn.py").read_text(encoding="utf-8").split('\nif __name__ == "__main__":')[0]
-    def cell(kind, text):
-        result = {"cell_type": kind, "metadata": {}, "source": text.splitlines(keepends=True)}
-        if kind == "code": result.update(execution_count=None, outputs=[])
-        return result
     return {
         "nbformat": 4, "nbformat_minor": 5,
         "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"}, "language_info": {"name": "python", "version": "3.11"}},
@@ -26,9 +29,23 @@ def notebook():
             cell("code", code),
             cell("code", 'result = main(["--model", "cnn", "--epochs", "1", "--train-limit", "2000", "--test-limit", "500", "--out", "results/cnn"])\n'),
             cell("code", 'from IPython.display import HTML, display, FileLink\ndisplay(HTML(Path("results/cnn/report.html").read_text(encoding="utf-8")))\ndisplay(FileLink("results/cnn/metrics.csv"))\ndisplay(FileLink("results/cnn/results.json"))\n'),
-            cell("markdown", "## 다음 실험\n학습 셀의 `cnn`을 `mlp`로 바꾸고 `--out`을 `results/mlp`로 바꿉니다.\n같은 데이터 수·seed로 비교하고 정확도뿐 아니라 loss와 오분류 이미지도 확인합니다.\nColab에서는 Files 패널 또는 링크로 결과를 내려받습니다.\n"),
+            cell("markdown", "## 다음 실험\n10일차에는 학습 셀의 `cnn`을 `mlp`로 바꾸고 `--out`을 `results/mlp`로 바꿉니다. 11일차에는 CNN을 실행합니다.\n같은 데이터 수·seed로 validation loss·정확도·오분류를 비교합니다. 기본 실행은 test를 평가하지 않습니다.\n조건을 확정한 뒤 선택 모델의 인자에 `--evaluate-test`를 추가해 마지막에만 test를 확인합니다.\nColab에서는 Files 패널 또는 링크로 결과를 내려받습니다.\n"),
         ],
     }
+
+
+def classical_notebook():
+    book = notebook()
+    code = (FILES / "classical_lab.py").read_text(encoding="utf-8").split('\nif __name__ == "__main__":')[0]
+    book["cells"] = [
+        cell("markdown", "# 2주 실습: 머신러닝 기초\n1~9일, 13~14일 코드를 포함합니다. `DAY`를 바꾸어 해당 날짜를 실행합니다.\n10~11일은 cnn_lab.ipynb, 12일은 Neo4j 준비 안내를 사용합니다. 날짜별 목표와 과제는 curriculum.md에 있습니다.\nCPU만 사용하며 설치 후 추가 데이터 다운로드는 없습니다. 마지막 14일차만 최종 test를 평가합니다.\n"),
+        cell("code", 'import importlib.util, subprocess, sys\nif any(importlib.util.find_spec(name) is None for name in ("sklearn", "matplotlib", "numpy")):\n    subprocess.check_call([sys.executable, "-m", "pip", "install", "scikit-learn>=1.6,<2", "matplotlib>=3.9,<4", "numpy>=1.26,<3"])\n'),
+        cell("code", code),
+        cell("code", 'DAY = 1  # 1..9, 13, 14 중 선택\nresult = main(["--day", str(DAY)])\n'),
+        cell("code", 'from IPython.display import HTML, display, FileLink\nfolder = Path(f"results/day{DAY:02}")\ndisplay(HTML((folder / "report.html").read_text(encoding="utf-8")))\ndisplay(FileLink(str(folder / "metrics.csv")))\ndisplay(FileLink(str(folder / "plot.png")))\n'),
+        cell("markdown", "## 조건 바꾸기\n예: `main([\"--day\", \"4\", \"--neighbors\", \"9\", \"--out\", \"results/day04-k9\"])`\n같은 폴더는 덮어씁니다. 바꾼 조건과 결과는 experiment-log.md에 적고 Colab 세션 종료 전에 내려받습니다.\n"),
+    ]
+    return book
 
 
 def cypher_files(graph):
@@ -52,6 +69,9 @@ def build():
     inputs = {path.name: path.read_bytes() for path in FILES.iterdir() if path.is_file()}
     inputs["graph.json"] = (LAB / "graph-data.json").read_bytes()
     inputs["cnn_lab.ipynb"] = json.dumps(notebook(), ensure_ascii=False, indent=2).encode()
+    inputs["ml_basics.ipynb"] = json.dumps(classical_notebook(), ensure_ascii=False, indent=2).encode()
+    article = (ROOT / "src/content/posts/ResearchLab/ResearchLab.md").read_text(encoding="utf-8")
+    inputs["curriculum.md"] = article.split("<!-- curriculum:start -->", 1)[1].split("<!-- curriculum:end -->", 1)[0].strip().encode() + b"\n"
     inputs.update({name: content.encode() for name, content in cypher_files(graph).items()})
     output = io.BytesIO()
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED) as archive:
