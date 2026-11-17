@@ -2,13 +2,15 @@
 title: "머신러닝·Neo4j 2주 실습"
 published: 2026-03-20
 updated: 2026-11-17
-draft: true
+draft: false
 labDownload: true
 description: "회귀·분류·앙상블·군집화·PCA·신경망·준지도학습과 Neo4j 실습 정리."
-tags: [머신러닝, Neo4j, Python, scikit-learn, PyTorch, 실습]
-category: 실습
-lang: ko
+tags: [machine learning, Neo4j, Python, scikit-learn, PyTorch, example]
+category: 'example'
+lang: 'ko'
 ---
+
+연구실 신입생을 위해 정리한 머신러닝·Neo4j 실습 예제.
 
 [실습 코드 ZIP 다운로드](#research-lab-download)
 

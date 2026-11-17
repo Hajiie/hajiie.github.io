@@ -1,8 +1,8 @@
 # Research lab maintenance
 
-The post `src/content/posts/ResearchLab/ResearchLab.md` remains a draft dated 2026-03-20, before Linker (2026-03-24). Keep `draft: true` until publication is requested.
+The post `src/content/posts/ResearchLab/ResearchLab.md` is published at the user's request (`draft: false`), dated 2026-03-20, before Linker (2026-03-24). Preserve the publication status and the user's tags/category when editing.
 
-`labDownload: true` renders `ResearchLabDownload.astro`. The archive is an embedded download link; there is no browser training runtime and no public asset endpoint for the draft.
+`labDownload: true` renders `ResearchLabDownload.astro`. The archive is embedded in the published page as a download link. There is no browser training runtime or separate archive asset endpoint.
 
 The Python files in `files/` are maintained source templates. `scripts/package_research_lab.py` specializes them into self-contained `day01/lab.py` through `day14/lab.py`, retaining only the corresponding lesson's algorithm and model. Each folder also contains its own requirements and README. All Python learning days include a self-contained notebook. Day 12 includes Neo4j Compose, graph data and Cypher instead of a notebook.
 
