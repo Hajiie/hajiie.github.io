@@ -173,7 +173,7 @@ function attachPlayground(root) {
 		showTable(view("graph-results"), graphResult.columns, graphResult.rows);
 		drawGraph(graphResult.path);
 		view("graph-status").textContent =
-			`${graphResult.rows.length}개 결과 · 샘플 JSON을 브라우저에서 계산했습니다.${graphResult.path.length ? " 관계의 방향을 무시한 최단 경로입니다." : ""}`;
+			`${graphResult.rows.length}행${graphResult.path.length ? " · 방향을 무시한 최단 경로" : ""}`;
 		action("download-graph").disabled = false;
 	});
 	action("download-graph").addEventListener("click", () => {
@@ -365,7 +365,7 @@ function attachPlayground(root) {
 				await new Promise((resolve) => requestAnimationFrame(resolve));
 			}
 			view("training-status").textContent =
-				`${cancelRequested ? "중단" : "완료"}: ${history.at(-1).epoch} epoch · 학습 80개 / 별도 검증 40개 · 합성 패턴 실습 결과입니다.`;
+				`${cancelRequested ? "중단" : "완료"}: ${history.at(-1).epoch} epoch · 학습 80개 / 별도 검증 40개`;
 		} catch (error) {
 			view("training-status").textContent = `학습 오류: ${error.message}`;
 		} finally {
@@ -380,8 +380,7 @@ function attachPlayground(root) {
 		model = createCNN(7);
 		history = [];
 		view("progress").value = 0;
-		view("training-status").textContent =
-			"고정 seed 7의 초기 가중치로 복원했습니다. 아직 학습하지 않았습니다.";
+		view("training-status").textContent = "seed 7 · 초기 가중치 복원";
 		refreshCNN(0);
 		setBusy(false);
 	});
@@ -414,7 +413,7 @@ function attachPlayground(root) {
 		save(
 			JSON.stringify(
 				{
-					dataset: "12x12 synthetic lines, not MNIST",
+					dataset: "12x12 synthetic lines",
 					seed: 7,
 					trainSeed: 11,
 					validationSeed: 902,

@@ -9,19 +9,17 @@ const payload = JSON.stringify({ archive, graph }).replaceAll("<", "\\u003c");
 ---
 <research-playground id="research-lab-playground" class="lab-root">
   <header class="lab-intro">
-    <p class="lab-eyebrow">2주 실습 · 브라우저 미리 체험</p>
-    <h2>직접 실행하고 결과를 확인하세요</h2>
-    <p>브라우저 예제는 이 기기에서 계산합니다. 14일 과정의 scikit-learn·PyTorch·Neo4j 실습은 코드 묶음을 내려받아 실행할 수 있습니다.</p>
+    <h2>브라우저 실습</h2>
     <button type="button" data-action="download-zip" class="lab-primary">실습 코드 ZIP 다운로드</button>
-    <span class="lab-file-note">14일 가이드 · 실험 기록지 · 회귀·분류·군집화 · Neo4j · 노트북 2개</span>
+    <span class="lab-file-note">Python · Cypher · Docker Compose · Jupyter 노트북</span>
   </header>
 
   <section class="lab-card" aria-labelledby="graph-lab-title">
-    <p class="lab-eyebrow">01 · 그래프 DB의 관계 이해</p>
-    <h3 id="graph-lab-title">연구자, 주제, 논문은 어떻게 연결될까요?</h3>
-    <p>7개 노드와 9개 관계로 탐색합니다. 이 화면은 샘플 JSON을 계산하는 예제이며, 표시한 Cypher를 Neo4j 서버에 전송하지 않습니다.</p>
+    <p class="lab-eyebrow">01 · 그래프 탐색</p>
+    <h3 id="graph-lab-title">연구 협업 그래프</h3>
+    <p>노드 7개, 관계 9개. JSON 기반 관계 탐색. Cypher는 다운로드한 Neo4j 예제에서 실행.</p>
     <div class="lab-controls">
-      <label>탐색할 질문
+      <label>조회 항목
         <select data-input="graph-query">
           <option value="topics">연구자별 연구 주제</option>
           <option value="shared">같은 주제를 연구하는 사람</option>
@@ -35,22 +33,22 @@ const payload = JSON.stringify({ archive, graph }).replaceAll("<", "\\u003c");
       <div>
         <div class="lab-legend"><span class="lab-person">연구자</span><span class="lab-topic">주제</span><span class="lab-paper">논문</span></div>
         <svg data-view="graph" viewBox="0 0 620 490" role="img" aria-label="연구 협업 네트워크: 노드를 선택하면 속성을 확인할 수 있습니다"></svg>
-        <p data-view="node-detail" class="lab-status" aria-live="polite">노드를 누르면 label과 속성을 확인할 수 있습니다.</p>
+        <p data-view="node-detail" class="lab-status" aria-live="polite">노드 선택 시 label·속성 표시.</p>
       </div>
       <div class="lab-query-panel">
-        <h4>실제 Neo4j에서 실행할 Cypher</h4>
-        <p><code>$lab = "research-lab-v1"</code> 매개변수를 사용합니다.</p>
+        <h4>Cypher</h4>
+        <p><code>$lab = "research-lab-v1"</code> 매개변수 사용.</p>
         <pre><code data-view="cypher"></code></pre>
       </div>
     </div>
-    <p data-view="graph-status" class="lab-status" role="status">질문을 고르고 실행해 보세요.</p>
+    <p data-view="graph-status" class="lab-status" role="status">조회 항목 선택 후 실행.</p>
     <div data-view="graph-results" class="lab-table-wrap"></div>
   </section>
 
   <section class="lab-card" aria-labelledby="cnn-lab-title">
-    <p class="lab-eyebrow">02 · CNN의 학습 과정 관찰</p>
-    <h3 id="cnn-lab-title">세로선과 가로선을 구분하는 작은 CNN</h3>
-    <p>12×12 합성 이미지로 50개 매개변수를 학습합니다. 합성 패턴 2종의 결과이며, MNIST 숫자 분류나 실제 연구 자료의 성능을 뜻하지 않습니다.</p>
+    <p class="lab-eyebrow">02 · CNN 학습</p>
+    <h3 id="cnn-lab-title">가로선·세로선 분류</h3>
+    <p>12×12 합성 선 이미지 2종, 매개변수 50개. 학습 80개, 검증 40개.</p>
     <p class="lab-architecture">12×12×1 → Conv 3×3, 4개 → ReLU → 전역 평균 → Linear 4→2</p>
     <div class="lab-controls">
       <label>학습 횟수(epoch)
@@ -64,7 +62,7 @@ const payload = JSON.stringify({ archive, graph }).replaceAll("<", "\\u003c");
       <button type="button" data-action="reset">초기화</button>
     </div>
     <progress data-view="progress" max="40" value="0" aria-label="CNN 학습 진행률"></progress>
-    <p data-view="training-status" class="lab-status" role="status">고정 seed 7 · 학습 80개 / 별도 검증 40개 · 아직 학습하지 않았습니다.</p>
+    <p data-view="training-status" class="lab-status" role="status">seed 7 · 학습 전</p>
     <div class="lab-metrics">
       <div><span>학습 loss</span><strong data-view="train-loss">—</strong></div>
       <div><span>검증 정확도</span><strong data-view="accuracy">—</strong></div>
@@ -72,7 +70,7 @@ const payload = JSON.stringify({ archive, graph }).replaceAll("<", "\\u003c");
     </div>
     <div class="lab-cnn-grid">
       <div class="lab-sample">
-        <h4>학습에 쓰지 않은 검증 이미지</h4>
+        <h4>검증 이미지</h4>
         <canvas data-view="sample" width="192" height="192" aria-label="선택한 12×12 검증 이미지"></canvas>
         <p data-view="prediction"></p>
         <button type="button" data-action="next-sample">다른 검증 이미지</button>
@@ -81,10 +79,10 @@ const payload = JSON.stringify({ archive, graph }).replaceAll("<", "\\u003c");
         <h4>loss 변화</h4>
         <svg data-view="loss-chart" viewBox="0 0 400 220" role="img" aria-label="epoch별 학습·검증 loss 그래프"></svg>
         <div class="lab-legend"><span class="lab-person">학습 loss</span><span class="lab-topic">검증 loss</span></div>
-        <p class="lab-muted">값이 작아질수록 정답에 가까워집니다. 학습률에 따라 중간에 커질 수도 있습니다.</p>
+        <p class="lab-muted">Cross-entropy loss. 학습·검증 데이터별 기록.</p>
       </div>
     </div>
-    <h4>현재 합성곱 필터와 특징 맵</h4>
+    <h4>합성곱 필터와 특징 맵</h4>
     <div class="lab-filters">
       <canvas data-view="kernel-0" width="90" height="90" aria-label="학습 중인 3×3 필터 1"></canvas>
       <canvas data-view="kernel-1" width="90" height="90" aria-label="학습 중인 3×3 필터 2"></canvas>
@@ -92,7 +90,7 @@ const payload = JSON.stringify({ archive, graph }).replaceAll("<", "\\u003c");
       <canvas data-view="kernel-3" width="90" height="90" aria-label="학습 중인 3×3 필터 4"></canvas>
       <div class="lab-feature-map"><canvas data-view="feature-map" width="120" height="120" aria-label="선택한 이미지의 첫 필터 특징 맵"></canvas><span>첫 필터의 ReLU 출력</span></div>
     </div>
-    <p class="lab-muted">필터의 파랑은 양수, 주황은 음수입니다. 학습하면 합성곱과 마지막 분류층의 가중치가 모두 바뀝니다.</p>
+    <p class="lab-muted">파랑: 양수 / 주황: 음수. 합성곱 필터와 분류층 가중치 학습.</p>
     <div data-view="confusion" class="lab-table-wrap"></div>
     <div class="lab-controls">
       <button type="button" data-action="download-metrics" disabled>학습 기록 CSV 다운로드</button>

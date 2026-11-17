@@ -1,8 +1,8 @@
-# 연구실 2주 실습: 머신러닝과 Neo4j
+# 머신러닝·Neo4j 2주 실습
 
-이 ZIP에는 14일 과정 가이드, scikit-learn·PyTorch·Neo4j 실습 코드가 들어 있습니다.
-먼저 `curriculum.md`의 1일차부터 진행하고 매일 `experiment-log.md`에 결과를 남깁니다. 하루 60~90분 기준입니다.
-홈페이지의 12×12 선 분류 예제와 아래 MNIST 28×28 숫자 분류는 서로 다른 데이터·모델입니다.
+- `curriculum.md`: 날짜별 개념·명령·비교 항목.
+- `experiment-log.md`: 실험 기록 양식.
+- 브라우저 CNN: 12×12 합성 선 이미지. Python 신경망 예제: 28×28 MNIST.
 
 ## 1. 공통 준비
 
@@ -45,7 +45,7 @@ python classical_lab.py --day 1
 - 10~11일: 아래 PyTorch 설치 후 `train_cnn.py`의 `--model mlp` / `--model cnn`을 실행합니다.
 - 12일: 아래 Neo4j 준비·실행을 따릅니다.
 - 13~14일: `python classical_lab.py --day 13` / `--day 14`를 실행합니다.
-- 날짜별 목표·과제·점검 질문과 조건 변경 예시는 `curriculum.md`에 있습니다.
+- 날짜별 개념·실행 명령·비교 항목은 `curriculum.md`에 있습니다.
 
 `results/day01/report.html`을 브라우저로 열면 그림과 지표를 바로 볼 수 있습니다.
 `plot.png`, `metrics.csv`, `predictions.csv`, `split.json`, `results.json`도 생성됩니다.
