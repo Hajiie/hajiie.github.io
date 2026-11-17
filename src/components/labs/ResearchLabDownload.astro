@@ -1,0 +1,7 @@
+---
+import archive from "../../labs/research/bundle.json";
+---
+<section id="research-lab-download" class="card-base my-6 p-5">
+  <a class="btn-regular inline-flex rounded-lg px-4 py-3 font-medium" href={`data:application/zip;base64,${archive.base64}`} download={archive.filename}>실습 코드 ZIP 다운로드</a>
+  <p class="text-50 mt-3 text-sm">day01–day14 · 일자별 Python 코드, 실행 안내, Jupyter 노트북</p>
+</section>

@@ -1,11 +1,16 @@
 """CPU integration checks; install the ZIP's requirements-ml.txt and requirements-cnn.txt first."""
 import contextlib
+import base64
+import hashlib
 import importlib.util
 import io
 import json
 import os
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
+import zipfile
 import unittest
 from unittest.mock import patch
 
@@ -22,6 +27,61 @@ def module(name):
 
 
 class CourseTests(unittest.TestCase):
+    def test_downloaded_daily_scripts_are_standalone_and_save_locally(self):
+        manifest = json.loads((ROOT / "src/labs/research/bundle.json").read_text())
+        archive = zipfile.ZipFile(io.BytesIO(base64.b64decode(manifest["base64"])))
+        self.assertIsNone(archive.testzip())
+        for entry in manifest["files"]:
+            self.assertEqual(hashlib.sha256(archive.read("research-lab/" + entry["name"])).hexdigest(), entry["sha256"])
+        with tempfile.TemporaryDirectory() as extracted, tempfile.TemporaryDirectory() as outside:
+            archive.extractall(extracted)
+            root = Path(extracted) / "research-lab"
+            for day in range(1, 15):
+                directory = root / f"day{day:02}"
+                arguments = [sys.executable, str(directory / "lab.py")]
+                if day == 12:
+                    # Database integration is separate. CLI parsing requires no active DB.
+                    arguments += ["--help"]
+                elif day in (10, 11):
+                    arguments += ["--dataset", "synthetic", "--epochs", "1", "--train-limit", "64",
+                                  "--validation-limit", "32", "--test-limit", "16"]
+                completed = subprocess.run(arguments, cwd=outside, capture_output=True, text=True)
+                self.assertEqual(completed.returncode, 0, f"day{day:02}: {completed.stderr}")
+                if day == 12:
+                    continue
+                result = json.loads((directory / "results/results.json").read_text())
+                self.assertEqual(result["test_evaluated"], day == 14)
+                if day in (10, 11):
+                    self.assertEqual(result["model"], "mlp" if day == 10 else "cnn")
+                else:
+                    self.assertEqual(result["day"], day)
+                self.assertTrue((directory / "results/report.html").is_file())
+            self.assertFalse((Path(outside) / "results").exists())
+            self.assertNotIn("Conv2d", (root / "day10/lab.py").read_text())
+            self.assertNotIn("KMeans", (root / "day03/lab.py").read_text())
+            self.assertNotIn("--day", (root / "day03/lab.py").read_text())
+            self.assertNotIn("--model", (root / "day10/lab.py").read_text())
+
+    def test_notebooks_embed_complete_daily_code(self):
+        manifest = json.loads((ROOT / "src/labs/research/bundle.json").read_text())
+        archive = zipfile.ZipFile(io.BytesIO(base64.b64decode(manifest["base64"])))
+        with tempfile.TemporaryDirectory() as folder, contextlib.redirect_stdout(io.StringIO()):
+            for day in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14]:
+                book = json.loads(archive.read(f"research-lab/day{day:02}/lab.ipynb"))
+                namespace = {"__name__": "notebook"}
+                for index, cell in enumerate(book["cells"]):
+                    if cell["cell_type"] == "code":
+                        compile("".join(cell["source"]), f"day{day}:cell{index}", "exec")
+                exec("".join(book["cells"][2]["source"]), namespace)
+                output = Path(folder) / f"day{day:02}"
+                namespace["__file__"] = str(output / "lab.py")
+                arguments = []
+                if day in (10, 11):
+                    arguments = ["--dataset", "synthetic", "--epochs", "1", "--train-limit", "32", "--validation-limit", "16", "--test-limit", "16"]
+                result = namespace["main"](arguments)
+                self.assertTrue((output / "results/report.html").is_file())
+                self.assertEqual(result["test_evaluated"], day == 14)
+
     def test_split_is_disjoint_stratified_and_reproducible(self):
         import numpy as np
         lab = module("classical_lab")
