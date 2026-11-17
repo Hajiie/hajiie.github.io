@@ -1,16 +1,28 @@
 ---
 title: F1 공기역학 시뮬레이터
 published: 2026-02-07
-description: 'F1 Aerodynamics Simulator'
+updated: 2026-11-17
+description: 'C++ D2Q9 LBM으로 2차원 유동을 계산하고 OpenGL로 유속·와도를 시각화하는 실험용 시뮬레이터. PNG 장애물과 ImGui 제어, 빌드 구성을 정리합니다.'
 image: './F1_Aerodynamics_Simulator_Start.png'
 tags: [Simulator, Mechanics, C++, Graphics]
 category: 'C++'
-draft: true 
+draft: true
 lang: 'C++'
 ---
 ::github{repo="Hajiie/F1_Aerodynamics_Simulator"}
 
 # F1 공기역학 시뮬레이터
+
+## 현재 구현 범위
+
+- C++에서 D2Q9 LBM 격자를 갱신하고, 결과를 OpenGL의 단일 채널 부동소수점 텍스처(`GL_R32F`)로 전송하여 렌더링.
+- 유속 크기와 와도(Vorticity) 시각화 모드를 선택하고 색상 강도를 조절.
+- ImGui에서 완화 시간 `TAU`, 유입 속도, 일시정지와 유체 상태 초기화 제어.
+- `f1_car_img.png`를 RGBA로 읽고 알파 값이 128보다 큰 픽셀을 장애물로 변환. 이미지와 격자의 Y축 방향도 변환.
+- 이미지는 격자 크기 범위 내에서 사용하며 자동 크기 조절은 하지 않음. 로딩에 실패하면 기본 사각형 장애물로 대체.
+
+현재는 차체 이미지 주변의 **2차원 유동을 관찰하는 실험용 구현**이며, 실제 F1 차량의 3차원 공력 해석이나 항력·다운포스 검증을 완료한 모델은 아님.
+물리 계산은 CPU에서 수행하고 OpenGL은 결과 시각화에 사용.
 
 ## LBM 엔진의 설계 원리
 
@@ -48,7 +60,16 @@ lang: 'C++'
 
 이를 통해 장애물 뒤에서 발생하는 소용돌이를 시각적으로 증명
 
-C++의 메모리 제어를 통해 초당 반복 횟수를 극대화하고, OpenGL 텍스처 매핑을 통해 실시간 유속장을 렌더링함.
+렌더링 프레임마다 일시정지 상태를 확인하고 LBM을 10회 갱신한 뒤 유속 또는 와도를 텍스처로 변환.
+초기화 시에는 장애물 배치를 유지하고 밀도·속도·분포 함수만 초기 상태로 복원.
+
+## 빌드와 리소스 구성
+
+- CMake 3.24 이상과 C++20 사용.
+- CMake `FetchContent`로 ImGui와 stb를 가져오고, ImGui 코어 및 GLFW·OpenGL3 백엔드 소스를 빌드 대상에 포함.
+- `${stb_SOURCE_DIR}`를 include 경로에 추가하여 `stb_image.h`를 사용.
+- `shaders` 디렉터리를 빌드 디렉터리로 복사하며, 실행 작업 디렉터리에서도 셰이더와 PNG 경로가 맞는지 확인이 필요.
+- 현재 CMake는 macOS와 Windows용 링크 구성을 포함. 실제 환경별 빌드에는 GLFW·OpenGL 등의 의존성 설정이 필요.
 
 # F1 Aerodynamics Simulator 트러블슈팅 정리
 ## 1. 공기 흐름이 보이지 않았던 원인 분석
@@ -91,7 +112,9 @@ C++의 메모리 제어를 통해 초당 반복 횟수를 극대화하고, OpenG
 - 실행 파일이 실행되는 위치(Working Directory)와 소스 파일의 위치가 달라 수정된 쉐이더 파일을 읽지 못하고 기존 파일을 읽었거나, 빌드 시스템이 리소스를 최신화하지 않았을 가능성이 큼.
 
 해결 방법
-- 쉐이더 소스 코드를 `main.cpp` 내부에 문자열(String Literal)로 직접 포함(Inline)시켜, 외부 파일 의존성을 제거하고 컴파일 시 무조건 최신 코드가 반영되도록 강제함.
+- 현재 코드는 `loadShaderSource()`로 `shaders/simulation.vert`와 `shaders/simulation.frag`를 외부 파일에서 읽도록 구성.
+- CMake에서 셰이더 디렉터리를 빌드 디렉터리로 복사하므로, 수정한 리소스의 복사 여부와 실행 작업 디렉터리를 함께 확인.
+- 상대 경로 로딩 실패 시 Windows 개발 환경의 절대 경로로 재시도하는 코드가 남아 있어, 다른 환경에서 공통으로 사용할 수 있는 해결책으로 보기는 어려움.
 
 ## 3. ImGui 통합 및 빌드 이슈
 ImGui를 프로젝트에 통합하는 과정에서 발생한 문제와 해결책은 다음과 같다.
@@ -102,7 +125,8 @@ ImGui를 프로젝트에 통합하는 과정에서 발생한 문제와 해결책
 - vcpkg로 설치한 ImGui 패키지는 헤더 파일만 제공하며, 실제 구현체인 `imgui_impl_glfw.cpp`, `imgui_impl_opengl3.cpp` 등은 포함되어 있지 않음.
 
 해결 방법
-- ImGui GitHub 저장소에서 해당 백엔드 소스 파일과 코어 소스 파일(`imgui.cpp` 등)을 직접 다운로드하여 프로젝트의 `external` 폴더에 추가하고, `CMakeLists.txt`에 소스 파일로 등록하여 직접 빌드하도록 설정함.
+- 현재는 CMake `FetchContent`로 ImGui 소스를 가져오고, 코어 소스와 `imgui_impl_glfw.cpp`, `imgui_impl_opengl3.cpp`를 실행 파일의 빌드 대상에 직접 등록.
+- 헤더 검색 경로와 실제 구현체의 컴파일·링크를 함께 설정.
 
 ### 2. 시뮬레이션 성능 저하 (Lagging)
 문제 및 원인
@@ -120,3 +144,8 @@ ImGui를 프로젝트에 통합하는 과정에서 발생한 문제와 해결책
 
 해결 방법
 - `stbi_load` 호출 시 강제로 4채널(RGBA)로 로드하도록 설정하고, 픽셀당 4바이트 간격으로 접근하여 4번째 바이트인 알파(A) 값을 기준으로 장애물 여부를 판단하도록 로직을 수정함.
+
+## 관련 구현 기록
+
+- [PNG 이미지를 장애물로 변환](https://github.com/Hajiie/F1_Aerodynamics_Simulator/commit/1a3a989b7898118cfb3173b24f44e8c24c897879)
+- [CMake의 stb 구성 수정](https://github.com/Hajiie/F1_Aerodynamics_Simulator/commit/bb7c64783b18447bc33430c8ebb427e57102b512)

@@ -1,7 +1,8 @@
 ---
 title: OpenGL
 published: 2025-09-09
-description: 'Summary of OpenGL Study Using C++'
+updated: 2026-11-17
+description: 'OpenGL 3.3·GLFW·GLAD로 창 생성과 입력·리사이즈 처리를 구현한 C++ 학습 기록. 저장소 빌드 구성과 그래픽 파이프라인 학습 메모를 정리합니다.'
 image: 'https://learnopengl.com/img/index_image2.png'
 tags: [OpenGL, Study, C++]
 category: 'Study'
@@ -9,6 +10,27 @@ draft: false
 lang: 'C++'
 ---
 ::github{repo="Hajiie/LearnOpenGL"}
+
+## 저장소 구현 현황
+
+2025년 9월 9일~11일 학습 커밋 기준으로, 현재 실행 대상은 `HelloWindow/HelloWindow.cpp`.
+OpenGL 3.3 Core Profile 창 생성, GLAD 함수 로딩, 배경색 지우기, ESC 종료와 창 크기 변경 콜백을 구현.
+아래 Triangle 부분은 그래픽 파이프라인과 정점 입력에 대한 학습 메모이며, 현재 저장소의 삼각형 렌더링 완료를 뜻하지 않음.
+
+### macOS 빌드 구성
+
+CMake 3.20 이상·C++17을 사용하며, GLFW와 OpenGL을 찾아 예제 및 `src/glad.c`를 함께 빌드.
+GLFW를 설치한 환경에서는 저장소 루트에서 다음 순서로 실행.
+
+```bash
+cmake -S . -B build
+cmake --build build
+./build/OpenGL
+```
+
+현재 CMake에는 macOS의 Cocoa·IOKit 프레임워크 링크가 포함되어 있으며, 다른 OS에서의 빌드 설정은 별도 확인이 필요.
+구현 변경은 [9월 9일~11일 학습 커밋](https://github.com/Hajiie/LearnOpenGL/commit/ae73a94b8519b00a5a4924f2e6ff501351c4a3bb)에 정리.
+
 [LearnOpenGL](https://learnopengl.com/) 강의 요약
 2025-09-09 ~ Ing
 
@@ -84,7 +106,7 @@ glBindObject(GL_WINDOW_TARGET, 0); // unbind
 
 ## Create Window
 
-### GLFW 초기화 및 설정, winodw 객체 생성
+### GLFW 초기화 및 설정, window 객체 생성
 GLFW 초기화 및 설정
 
 `glfwWindowHint(구성하려는 옵션(GLFW_ 접두사가 붙은 열거형 옵션 중 택), 선택한 옵션의 값을 설정);`
@@ -178,7 +200,7 @@ GLFW 입력 제어 기능
 키를 입력으로 받는 `glfwGetKey` 함수 사용
 ```cpp
 void processInput(GLFWwindow *window){
-  if(glfwGetKey(window, GLFW_KET_ESCAPE) == GLFW_PRESS){
+  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS){
     glfwSetWindowShouldClose(window,true);
   }
 }
@@ -208,7 +230,7 @@ while (!glfwWindowShouldClose(window)) {
 
 :::tip[설정 가능한 버퍼 비트]
 - `GL_COLOR_BUFFER_BIT`
-- `GL_GL_DEPTH_BUFFER_BIT`
+- `GL_DEPTH_BUFFER_BIT`
 - `GL_STENCIL_BUFFER_BIT`
 :::
 
@@ -220,7 +242,7 @@ while (!glfwWindowShouldClose(window)) {
 `glClear` 함수는 state-using(Use Context), 상태 사용 함수
 :::
 
-## Triangle
+## Triangle 학습 메모
 OpenGL은 3D, 스크린이나 Window는 2D 픽셀 배열  
 OpenGL의 작업은 3D 좌표를 스크린(Window)에 맞는 2D 픽셀로 변환하는 것  
 이 과정은 OpenGL의 `Graphics Pipeline`으로 관리  

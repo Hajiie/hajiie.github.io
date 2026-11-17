@@ -1,7 +1,8 @@
 ---
 title: 투수 동작 분석 서버 및 시각화
 published: 2025-12-29
-description: 'Django-based Pitcher Analysis Backend Server & Visualization'
+updated: 2026-11-17
+description: 'MediaPipe·YOLO 기반 투수 동작 분석과 DTW 유사도 비교를 제공하는 Django 서버. 선수·영상 관리, 분석 상태와 날짜별 점수 기록을 정리합니다.'
 image: "./INGPS_Start.png"
 tags: [Python, Server, Django]
 category: 'Django'
@@ -18,12 +19,12 @@ lang: 'Python'
 
 ## 주요 기술 및 구현
 Backend Framework
-- Django를 사용하여 데이터 모델링(ORM), API 엔드포이늩 처리, 파일 업로드 및 관리를 수행
+- Django를 사용하여 데이터 모델링(ORM), API 엔드포인트 처리, 파일 업로드 및 관리를 수행
 
 Pose Estimation(자세 추정)
 - MediaPipe Pose를 활용하여 투수의 신체 33개 랜드마크를 추출. 이를 통해 관절의 위치, 각도, 움직임을 프레임 단위로 추적
 
-Obect Detection(객체 탐지)
+Object Detection(객체 탐지)
 - YOLO(Ultralytics) 모델(`best_baseball_ball.pt`)을 사용하여 투구된 공을 프레임별로 탐지하고 추적
 
 Video Processing
@@ -31,18 +32,18 @@ Video Processing
 
 Data Analysis Algorithms
 - FastDTW(Dynamic Time Warping): 시계열 데이터의 유사도를 분석하는 알고리즘으로, 투구 속도가 다르더라도 기준 영상(Optimum Form)과 테스트 영상 간의 자세 유사도를 구간별로 비교 및 채점
-- BioMechanics Calculation: `numpy`를 활용하여 관절 각도(팔꿈치, 무릎), 상체 기울기, 손목 속도, 어깨 회적 각속도 등을 수학적으로 계싼
+- BioMechanics Calculation: `numpy`를 활용하여 관절 각도(팔꿈치, 무릎), 상체 기울기, 손목 속도, 어깨 회전 각속도 등을 수학적으로 계산
 
 ## 시스템 주요 기능
-자동 투구 구간 분할(Phrase Segmentation)
-- 투구 동작을 **Start(시작) -> Max Knee(키킹 정점) -> Fixed(착지) -> Release(릴리스) -> Follow(팔로우스로)** 의 4단계로 자동 분할하여 분석
+자동 투구 구간 분할(Phase Segmentation)
+- **Start(시작) → Max Knee(키킹 정점) → Fixed(착지) → Release(릴리스) → Follow(팔로우스로)** 의 5개 기준 프레임으로 4개 구간을 구성하여 분석
 
 정밀 투구 분석
-- 릴리스 이후 공의 위치를 추적, 선수의 정강이 길이(Shin Length)를 기준으로 픽셀 거리를 실제 거리로 변환하여 구속(km/h)을 계산
+- 릴리스 이후 공의 위치를 추적하여 궤적을 제공. 정강이 길이를 이용한 추정 구속 계산과 반환 코드도 있으나, 현재 README에서는 구속을 주요 기능에서 제외하고 있어 검증된 구속 측정 기능으로 소개하지 않음
 - 릴리스 순간의 팔 각도, 무릎 각도, 상체 기울기, 손의 높이 등을 수치화하여 제공
 - 손목의 이동 속도(m/s)와 어깨의 회전 각속도(deg/s)를 그래프 및 히트맵 형태의 영상으로 시각화
 
-유사도 분석(DTW Similiarity)
+유사도 분석(DTW Similarity)
 - 선수의 '최적 폼(Optimum Form)' 영상과 현재 투구 영상을 비교하여, 전체적인 유사도 점수와 각 투구 구간별(키킹, 스트라이드 등) 유사도를 100점 만점으로 평가
 
 시각화 영상 생성
@@ -50,6 +51,18 @@ Data Analysis Algorithms
 
 선수 및 시즌 관리
 - 선수 프로필, 시즌별 상세 스텟(ERA, 승/패, 탈삼진 등)을 체계적으로 관리하는 CRUD 기능을 제공
+- 선수의 영문 이름과 등번호를 함께 관리
+
+분석 상태와 훈련 기록
+- 영상 목록의 `isAnalysis`로 분석 여부를 반환. 현재 구현은 저장된 `ball_speed` 값의 존재를 기준으로 하므로 실시간 진행률이나 전체 결과의 완전성을 의미하지 않음
+- 선수별 DTW 기록을 날짜별로 묶어 평균 점수(`overall_score`)와 기준 영상 변경 여부(`isChanged`)를 반환
+- 영상 상세 응답에 FPS를 포함하고, 프레임별 자세 지표·스켈레톤 좌표·팔 궤적을 개별 API로 조회
+
+## 실행과 데이터 구성
+
+- `requirements.txt`의 의존성을 설치하고 Django 설정용 환경 변수와 YOLO 모델 파일을 준비.
+- `python run_server.py` 실행 시 DB가 없으면 초기 마이그레이션 후 Waitress 서버를 실행.
+- 선수·시즌·영상·DTW 결과의 관계와 요청·응답 형식은 저장소의 [API 명세](https://github.com/Hajiie/IN_GPS_SERVER/blob/main/API_DOC.md)에 정리.
 
 ## 프로젝트 의의
 저비용 고효율 분석
@@ -97,10 +110,17 @@ Data Analysis Algorithms
 해결 방법
 - DTW 유사도 계산 로직을 디버깅하여 오류를 수정, 영상 일시정지 기능 등과 연동될 때 필요한 FPS 처리 로직도 함께 보완하여 정확도를 높임
 
-## 5. IDOR 보안 취약점
+## 5. 리소스 식별자의 예측 가능성
 문제 및 원인
 - 선수나 영상 등의 리소스 식별자로 예측 가능한 정수형 ID(1,2,3,...)를 사용하고 있어, 공격자가 ID를 조작하여 다른 사용자의 데이터에 접근할 수 있는 위험(IDOR)이 존재함
 - 초기 개발 단계에서 데이터베이스의 기본 설정인 Auto Increment ID를 그대로 사용
 
 해결 방법
-- 모든 주요 모델(Player, VideoAnalysis 등)의 Primary Key를 예측 불가능한 UUID로 변경하고, API 엔드포인트에서도 UUID를 받도록 수정하여 보안성 강화
+- `Player`와 `VideoAnalysis`의 Primary Key를 UUID로 변경하고, 관련 API에서도 UUID를 받도록 수정.
+- UUID는 순차 ID의 열거를 어렵게 하지만, 사용자별 인증·리소스 접근 권한 검사를 대체하지 않으므로 이것만으로 IDOR가 해결되었다고 볼 수는 없음.
+
+## 관련 구현 기록
+
+- [분석 여부 반환](https://github.com/Hajiie/IN_GPS_SERVER/commit/497e1c03fd23f363c29900d23b29cafb27e7988c)
+- [DTW 점수 기록 API](https://github.com/Hajiie/IN_GPS_SERVER/commit/6e67db2ea421ebc60dd5341847fc098346f78885)
+- [선수 영문 이름과 등번호](https://github.com/Hajiie/IN_GPS_SERVER/commit/f420f40497a60ac68b41d99dc47c47023fb5a6e8)

@@ -1,7 +1,8 @@
 ---
 title: "토목공학과 졸업프로젝트: 침수 시각화" 
 published: 2025-09-08
-description: 'The objective is to develop an application capable of visualising flood situations in augmented reality (AR) within the physical space of urban areas where flood and inundation risks exist.'
+updated: 2026-11-17
+description: 'GPS·GeoJSON 침수 데이터와 Unity AR Foundation을 연결한 침수 시각화 프로젝트. 수위 타임라인·속도 조절과 터치 기반 위험 마커를 구현했습니다.'
 image: ""
 tags: [Unity, GraduationProject, C#, Visualization]
 category: 'Unity'
@@ -26,7 +27,8 @@ lang: 'C#'
 
 ## 주요 기술 및 구현
 기반 기술
-- Unity 기반의 AR 시각화 프로세스 적용
+- Unity와 AR Foundation 기반의 AR 시각화 프로세스 적용
+- GeoJSON 침수 데이터와 GPS 위치를 연결하고 EPSG 좌표계 변환을 통해 수심 계산
 
 위치 계산
 - Unity 내에서 GPS 좌표와 환경부 침수 지도 좌표계 일치
@@ -34,6 +36,8 @@ lang: 'C#'
 
 수위 시뮬레이션
 - Unity 스크립트를 통해 시간 경과에 따른 점진적인 수위 상승 연출
+- 5분 또는 10초 타임라인에 따른 수면 상승과 재생 속도 조절·초기화 지원
+- GPS 위치가 바뀌면 해당 지점의 침수심으로 갱신
 
 수심 시각화
 - 침수 깊이에 따른 물 색상 변화로 위험도 시각적 표현
@@ -42,16 +46,24 @@ lang: 'C#'
 ## 시스템 주요 기능
 AR 시각화
 - 사용자 실제 공간에 3D 침수 상황을 오버레이하여 위험 체감 극대화
+- 인식한 지면을 기준으로 물을 렌더링하고, 이동 중에도 위치에 따른 수심 시뮬레이션 유지
 
 맨홀 위험 경고
 - 맨홀 위치 사전 표시 및 역류 위험 시각화로 접근 방지 유도
   - 해당 기능은 구현되지 못한 기능으로 추후 프로젝트를 더 진행할 수 있다면 추가할 기능이며, 현재 프로젝트에서는 사용자가 인식한 맨홀을 클릭하여 표시하는 방식을 사용
+- 침수 영역을 터치하여 위험 마커를 생성하거나 제거. 맨홀 자동 탐지·위험도 예측과는 별개의 사용자 표시 기능
 
 GPS 지도 연동
 - 화면 하단 지도를 통해 현재 위치 및 주변 침수 레벨 확인 기능 제공
 
 시각적 경고 강화
 - 쉐이더 효과, 파도 애니메이션 등을 적용하여 시각적 경각심 증대
+
+## 실행 구성
+
+- 저장소 안내의 Unity 버전은 `6000.1.4f1`.
+- Unity Hub에서 프로젝트를 열고 `Assets/Scenes/AR_Flooding.unity` 장면을 기준으로 실행.
+- 침수 GeoJSON과 GPS·AR 지면 인식을 사용하는 구성으로, 실시간 강우 데이터 연계는 향후 확장 항목에 해당.
 
 ## 프로젝트 의의 및 향후 계획
 
@@ -90,3 +102,8 @@ GPS 지도 연동
 해결 방법
 - GeoJSON 파싱 단계에서 NaN/Null 체크 후 기본값(0) 적용
 - Shader 전달 전 0~1 범위로 정규화하여 안정적으로 색상 및 높이 매핑
+
+## 관련 구현 기록
+
+- [지도·방향 표시와 침수심에 따른 물 색상 변경](https://github.com/Hajiie/AR_Flooding_Mobile/commit/a1c94597749599187696426fd6fbb76787cc0e2c)
+- [GPS 위치 갱신·시간별 침수심·속도 제어·위험 마커](https://github.com/Hajiie/AR_Flooding_Mobile/commit/2040d51e30cf05c9384bab4f7d40f47b3117c183)
